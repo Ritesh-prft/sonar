@@ -1,15 +1,23 @@
-#!/usr/bin/env python
-from flask import Flask
+from flask import Flask, jsonify
+
 app = Flask(__name__)
 
-@app.route('/')
-@app.route('/hello/')
-def hello_world():
-    return 'Hello World!\n'
 
-@app.route('/hello/<username>') # dynamic route
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+
+
+@app.route('/hello/<username>')
 def hello_user(username):
-    return 'Why Hello %s!\n' % username
+    return f'Hello {username}'
+
+
+@app.route('/health')
+def health_checking():
+    ret = {'status': 'UP'}
+    return jsonify(ret)
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')     # open for everyone
+    app.run(port=5000, debug=False)
