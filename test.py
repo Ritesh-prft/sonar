@@ -28,7 +28,6 @@ if __name__ == '__main__':
     runner = xmlrunner.XMLTestRunner(output='test-reports')
     unittest.main(testRunner=runner)
     unittest.main()
-TEST_CASES
-chmod +x test.py
+
 
 
