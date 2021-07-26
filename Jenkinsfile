@@ -1,31 +1,33 @@
 pipeline {
-    agent none
-    stages {
-        stage('Build') {
-            agent {
-                docker {
-                    image 'python:2-alpine'
-                }
-            }
-            steps {
-                sh 'python -m py_compile sources/add2vals.py sources/calc.py'
-                stash(name: 'compiled-results', includes: 'sources/*.py*')
-            }
+  agent none
+  stages {
+    stage('build and test') {
+      agent { docker { image 'python:3.6.9-alpine' } }
+      stages {
+        stage('build'){
+          steps {
+            sh 'pip install --no-cache-dir -r requirements.txt'
+          }
         }
-        stage('Test') { 
-            agent {
-                docker {
-                    image 'qnib/pytest' 
-                }
+        stage('test') {
+          steps {
+            sh 'python test.py'
+          }
+          post {
+            always {
+              junit 'test-reports/*.xml'
             }
-            steps {
-                sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py' 
-            }
-            post {
-                always {
-                    junit 'test-reports/results.xml' 
-                }
-            }
+          }
         }
+      }
     }
+    stage('build docker image'){
+      agent any
+      steps{
+        sh 'docker build -t my-flask-image:latest .'
+        sh 'a=`docker images -f "dangling=true" -q | wc -l`'
+        sh 'if [ $a -ge 0 ];then docker rmi $(docker images -f "dangling=true" -q);fi'
+      }
+    }
+  }
 }
