@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'pwd;cd jenkins ;mvn -B -DskipTests clean package'
+                sh 'pwd;cd sjapp/jenkins ;mvn -B -DskipTests clean package'
             }
         }
         stage('Test') {
